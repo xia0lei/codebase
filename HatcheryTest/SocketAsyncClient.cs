@@ -26,11 +26,32 @@ namespace SocketAsyncClient
             hostEndPoint = new IPEndPoint(addressList[addressList.Length -1], port);
             clientSocket = new Socket(hostEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         }
-
+        
         internal void Connect()
         {
             SocketAsyncEventArgs connectArgs = new SocketAsyncEventArgs();
             connectArgs.UserToken = clientSocket;
+            connectArgs.RemoteEndPoint = hostEndPoint;
+            connectArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnConnect);
+            autoConnectEvent.WaitOne();
+            Console.WriteLine("Test 1");
+
+            SocketError errorCode = connectArgs.SocketError;
+            if(errorCode != SocketError.Success)
+            {
+                throw new SocketException((Int32)errorCode);
+            }
+        }
+
+        private void OnConnect(object sender, SocketAsyncEventArgs e)
+        {
+            autoConnectEvent.Set();
+            Console.WriteLine("Test 2");
+            connected = (e.SocketError == SocketError.Success);
+            if (connected)
+            {
+                Console.WriteLine("Connect Successfull");
+            }
         }
 
         public void Dispose()
