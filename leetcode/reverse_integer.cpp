@@ -2,6 +2,7 @@
 #include <string>
 #include <cmath>
 #include <math.h>
+#include <limits.h>
 #include <vector>
 using namespace std;
 
@@ -37,7 +38,7 @@ int reverse(int x){
         return 0;
 
 	bool isNag = (x < 0);
-    //int 的范围是-(2^15=-1) (2^15-1)
+    //abs的范围是-(2^15=-1) (2^15-1)
 	long absX = fabs(x);
     cout<<"absX "<<absX<<endl;
 	int bitNum = calcBitNum(absX);
@@ -78,11 +79,24 @@ int reverse(int x){
 	}
 }
 
+int reverse2(int x){
+    int rev = 0;
+    while (x != 0) {
+        if (rev < INT_MIN / 10 || rev > INT_MAX / 10) {
+            return 0;
+        }
+        int digit = x % 10;
+        x /= 10;
+        rev = rev * 10 + digit;
+    }
+    return rev;
+}
+
 int main()
 {
 	string a;
 	cin>>a;
 	int num = atoi(a.c_str());
-	reverse(-2147483648);
+	cout << reverse2(num)<<endl;
 	return 0;
 }
