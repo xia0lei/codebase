@@ -5,21 +5,41 @@
 #include <vector>
 using namespace std;
 
-int calcBitNum(int num){
+int calcBitNum(long num){
 	int gap = 10;
 	int count = 1;
-	int t = gap;
+	long t = gap;
 	while(t <= num)
 	{
 		count += 1;
-		t = pow(gap, count);
+		t *= 10;/*pow(gap, count)*/
+        cout<<"t"<<t<<endl;
 	}
 	return count;
 }
 
+int reverseVec(const vector<int>& vec)
+{
+    int size = vec.size();
+    long value = 0;
+    for(int i = 1; i<= size;i++){
+        value += vec[size - i]*pow(10, size - i);
+        cout << "i "<<i<<"  "<<value<<endl;
+    }
+    if(value >= (-1)*pow(2, 31) &&value <=(pow(2, 31)-1))
+        return value;
+    else
+        return 0;
+}
+
 int reverse(int x){
+    if(x<((-1)*pow(2, 31))|| x >(pow(2,31)-1))
+        return 0;
+
 	bool isNag = (x < 0);
-	int absX = abs(x);
+    //int 的范围是-(2^15=-1) (2^15-1)
+	long absX = fabs(x);
+    cout<<"absX "<<absX<<endl;
 	int bitNum = calcBitNum(absX);
 	cout<<"bitNum "<<bitNum<<endl;
 	if(bitNum <=1)
@@ -27,25 +47,32 @@ int reverse(int x){
 		return x;
 	}
 	else{
-		vector<int> vec;
-		int left = absX;
+		vector<int> vec(bitNum, 0);
+		long left = absX;
 		for(int i = bitNum;i>1;i--)
 		{
-			int first = left/(pow(10, i-1));
-			left = left - pow(10, i-1);
-			vec.push_back(first);
-		}
-		int tail = absX;
+			long first = left/(pow(10, i-1));
+			left = left - (first*pow(10, i-1));
+			vec[bitNum - i] = first;
+        }
+        for(auto v:vec){
+            cout<<v;
+        }
+        cout<<endl;
+
+		long tail = absX;
 		for(int i = 1;i<bitNum;i++)
 		{
 			tail= tail-(vec[i-1]*pow(10, bitNum-i));
 		}
-		vec.push_back(tail);
-		left = 0;
-		for(int i = bitNum;i>0;--i)
-		{
-			left = left + vec[bitNum-i]*pow(10, i-1);
-		}
+        cout<<"tail "<<tail<<endl;
+        if(tail > 0)
+            vec[bitNum -1] = tail;
+        for(auto v:vec){
+            cout<<v;
+        }
+        cout<<endl;
+        left = reverseVec(vec);
 		cout<<left<<endl;
 		return isNag ? (-1)*left:left;
 	}
@@ -56,6 +83,6 @@ int main()
 	string a;
 	cin>>a;
 	int num = atoi(a.c_str());
-	reverse(123);
+	reverse(-2147483648);
 	return 0;
 }
