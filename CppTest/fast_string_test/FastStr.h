@@ -49,6 +49,16 @@ class TFastStr
             init(src.c_str(), src.length());
         }
 
+        TFastStr(const TYPE* s1, const TYPE* s2)
+        {
+            init2(s1, TRAITS::Length(s1), s2, TRAITS::Length(s2));
+        }
+
+        TFastStr(const TYPE* s1, size_t len1, const TYPE* s2, size_t len2)
+        {
+            init2(s1, len1, s2, len2);
+        }
+
         bool empty() const{
             return  (0==m_nSize);
         }
@@ -78,6 +88,42 @@ class TFastStr
 
         const TYPE* c_str() const{
             return m_pData;
+        }
+
+        void swap(self_type& src)
+        {
+            size_t temp_size = src.m_nSize;
+            size_t temp_capacity = src.m_nCapacity;
+            TYPE* temp_pdata = src.m_pData;
+            TYPE temp_stack[SIZE];
+
+            if(temp_capacity <= SIZE)
+            {
+                TRAITS::Copy(temp_stack, src.m_Stack, temp_size+1);
+            }
+
+            src.m_nSize = m_nSize;
+            src.m_nCapacity = m_nCapacity;
+
+            if(m_nCapacity<=SIZE)
+            {
+                TRAITS::Copy(src.m_Stack, m_Stack, m_nSize +1);
+                src.m_pData = src.m_Stack;
+            }
+            else{
+                src.m_pData = m_pData;
+            }
+
+            m_nSize = temp_size;
+            m_nCapacity = temp_capacity;
+
+            if(temp_capacity <= SIZE)
+            {
+                TRAITS::Copy(m_Stack, temp_stack, temp_size+1);
+                m_pData = m_Stack;
+            }
+
+            m_Alloc.Swap(src.m_Alloc);
         }
 
     private:
@@ -117,6 +163,38 @@ class TFastStr
             TRAITS::Copy(m_pData, s1, SIZE1);
             TRAITS::Copy(m_pData + SIZE1, s2, SIZE2);
             TRAITS::Put(m_pData+SIZE1+SIZE2, 0);
+        }
+
+        self_type& inner_assign(const TYPE* s, size_t len)
+        {
+            if(len<m_nCapacity)
+            {
+                TRAITS::Copy(m_pData, s, len);
+                TRAITS::Put(m_pData+len, 0);
+                m_nSize = len;
+            }
+            else{
+                self_type temp(s, len);
+                swap(temp);
+            }
+            return *this;
+        }
+
+        self_type& inner_append(const TYPE* s, size_t len)
+        {
+            const size_t NEW_SIZE = m_nSize+len;
+            if(NEW_SIZE < m_nCapacity)
+            {
+                TRAITS::Copy(m_pData + m_nSize, s, len);
+                TRAITS::Put(m_pData + m_nSize + len, 0);
+                m_nSize = NEW_SIZE;
+            }
+            else
+            {
+                self_type temp(c_str(), length(), s, len);
+                swap(temp);
+            }
+            return *this;
         }
 
     private:
