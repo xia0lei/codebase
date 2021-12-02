@@ -39,6 +39,11 @@ class TFastStr
             }
         }
 
+        self_type& operator=(const self_type& src)
+        {
+            return inner_assign(src.c_str(), src.length());
+        }
+
         TFastStr(const TYPE* src)
         {
             init(src, TRAITS::Length(src));
