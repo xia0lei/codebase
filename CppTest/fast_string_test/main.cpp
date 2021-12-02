@@ -1,13 +1,8 @@
-#include <iostream>
+#include "common.h"
 
-#include "FastStr.h"
-typedef TFastStr<char, 10> fast_string;
-
-void show(const fast_string& fs)
-{
-    std::cout<<fs.c_str()<<" "<<fs.length()<<" "<<fs.capacity()<<std::endl;
-}
-
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 void test1()
 {
     fast_string fs("hello-world");
@@ -23,8 +18,58 @@ void test2()
     show(fs);
 }
 
+void test3()
+{
+    fast_string fs1("aaaaaaaaaaaaaaaaaaaa20");
+    show(fs1);
+    fast_string fs2;
+    fs2 = fs1;
+    show(fs2);
+}
+
+void test4()
+{
+    fast_string fs1("aaaaaaaaaaaaaaaaaaaa20");
+    show(fs1);
+    fast_string fs2("aaaaaaaaaa");
+    fs2 = fs1;
+    show(fs2);
+}
+
+void test_bench()
+{
+    const int count = 10000000;
+    auto startTime = clock();
+    for(int i = 0;i<count;i++)
+    {
+        std::string s(std::to_string(i).c_str());
+    }
+    auto total_t = (double)(clock() - startTime)/CLOCKS_PER_SEC;
+    std::cout<<total_t<<""<<total_t*1000<<std::endl;
+
+    startTime = clock();
+    for(int i = 0;i<count;i++)
+    {
+        fast_string s(std::to_string(i).c_str());
+    }
+    total_t = (double)(clock() - startTime)/CLOCKS_PER_SEC;
+    std::cout<<total_t<<""<<total_t*1000<<std::endl;
+
+}
+
+void test999999()
+{
+    char stack[10];
+    stack[0];
+    std::cout<<stack<<std::endl;
+
+    char destStack[10] = {'h', 'e', 'l','l','o','w','o','r','l','d'};
+    memcpy(destStack, stack, 1);
+    std::cout<<sizeof(destStack)<<" "<<destStack<<std::endl;
+}
+
 int main()
 {
-    test2();
+    test_bench();
     return 0;
 }

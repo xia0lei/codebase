@@ -2,6 +2,7 @@
 #define _PUBLIC_FASTSTR_H
 
 #include "CharTraits.h"
+#include "common.h"
 
 class TFastStrAlloc
 {
@@ -11,7 +12,7 @@ class TFastStrAlloc
 
         void *Alloc(size_t size){return new char[size];}
         void Free(void* ptr, size_t size){delete[] (char*)ptr;}
-        void Swap(TFastStrAlloc& src){}
+        void Swap(TFastStrAlloc& src){std::cout<<"TFastStrAlloc Swap"<<std::endl;}
 
 };
 
@@ -52,6 +53,11 @@ class TFastStr
         TFastStr(const self_type& src)
         {
             init(src.c_str(), src.length());
+        }
+
+        TFastStr(const TYPE* src, size_t len)
+        {
+            init(src, len);
         }
 
         TFastStr(const TYPE* s1, const TYPE* s2)
@@ -97,9 +103,11 @@ class TFastStr
 
         void swap(self_type& src)
         {
+            std::cout<<"swap start "<<src.c_str()<<std::endl;
             size_t temp_size = src.m_nSize;
             size_t temp_capacity = src.m_nCapacity;
             TYPE* temp_pdata = src.m_pData;
+            std::cout<<"temp_stack "<<(void*)src.m_Stack<<std::endl;
             TYPE temp_stack[SIZE];
 
             if(temp_capacity <= SIZE)
@@ -107,15 +115,19 @@ class TFastStr
                 TRAITS::Copy(temp_stack, src.m_Stack, temp_size+1);
             }
 
+            std::cout<<"m_nSize "<<m_nSize<<" m_nCapacity "<<m_nCapacity<<" "<<SIZE<<std::endl;
             src.m_nSize = m_nSize;
             src.m_nCapacity = m_nCapacity;
 
             if(m_nCapacity<=SIZE)
             {
+                std::cout<<"src.m_Stack "<<(void*)src.m_Stack<<" m_Stack "<<(void*)m_Stack<<std::endl;
+                //这里可以理解成被清空了
                 TRAITS::Copy(src.m_Stack, m_Stack, m_nSize +1);
                 src.m_pData = src.m_Stack;
             }
             else{
+                std::cout<<"m_pData "<<(void*)m_pData<<std::endl;
                 src.m_pData = m_pData;
             }
 
@@ -127,8 +139,20 @@ class TFastStr
                 TRAITS::Copy(m_Stack, temp_stack, temp_size+1);
                 m_pData = m_Stack;
             }
+            else{
+                m_pData = temp_pdata;
+            }
 
             m_Alloc.Swap(src.m_Alloc);
+        }
+
+        void showStack(TYPE* stack)
+        {
+            for(int i  =0;i<SIZE;i++)
+            {
+                std::cout<<(TYPE)*(stack+i);
+            }
+            std::cout<<std::endl;
         }
 
     private:
@@ -172,6 +196,8 @@ class TFastStr
 
         self_type& inner_assign(const TYPE* s, size_t len)
         {
+            std::cout<<"inner assign start"<<std::endl;
+            std::cout<<"len "<<len<<" cap "<<m_nCapacity<<std::endl;
             if(len<m_nCapacity)
             {
                 TRAITS::Copy(m_pData, s, len);
@@ -181,6 +207,8 @@ class TFastStr
             else{
                 self_type temp(s, len);
                 swap(temp);
+                std::cout<<"show temp"<<std::endl;
+                show(temp);
             }
             return *this;
         }
