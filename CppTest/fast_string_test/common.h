@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "FastStr.h"
-typedef TFastStr<char, 128> fast_string;
+typedef TFastStr<char, 10> fast_string;
 
 void show(const fast_string& fs)
 {

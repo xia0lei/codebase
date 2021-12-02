@@ -206,6 +206,7 @@ class TFastStr
             }
             else{
                 self_type temp(s, len);
+                std::cout<<"temp "<<temp.length()<<" cap "<<temp.m_nCapacity<<std::endl;
                 swap(temp);
                 std::cout<<"show temp"<<std::endl;
                 show(temp);

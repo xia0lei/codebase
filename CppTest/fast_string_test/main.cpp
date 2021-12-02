@@ -70,6 +70,6 @@ void test999999()
 
 int main()
 {
-    test_bench();
+    test3();
     return 0;
 }
