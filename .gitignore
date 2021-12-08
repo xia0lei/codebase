@@ -51,3 +51,12 @@ Module.symvers
 Mkfile.old
 dkms.conf
 rust-test/main
+
+#rust
+debug/
+target/
+
+Cargo.lock
+
+**/*.rs.bk
+

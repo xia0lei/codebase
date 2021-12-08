@@ -116,6 +116,7 @@ class TFastStr
             }
 
             std::cout<<"m_nSize "<<m_nSize<<" m_nCapacity "<<m_nCapacity<<" "<<SIZE<<std::endl;
+            //交换size和capacity
             src.m_nSize = m_nSize;
             src.m_nCapacity = m_nCapacity;
 
