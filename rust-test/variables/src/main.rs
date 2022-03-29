@@ -1,6 +1,19 @@
+fn takes_ownership(some_string:&String){
+    println!("{}", some_string);
+}
+
+fn makes_copy(some_integer:i32){
+    println!("{}", some_integer);
+}
+
 fn main() {
-    let mut x = 5;
-    println!("The value of x is:{}", x);
-    x = 6;
-    println!("The value of x is:{}", x);
+    let s = String::from("hello");
+
+    takes_ownership(&s);
+
+    let e = &s;
+    println!("{}", e);
+
+    let x = 5;
+    makes_copy(x);
 }
